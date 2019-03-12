@@ -13,6 +13,7 @@ import Drawer from "@material-ui/core/Drawer";
 import { ListItem, ListItemText, List } from "@material-ui/core";
 import Index from "./pages/Index";
 import Scan from "./pages/Scan";
+import { getProfiles } from "./services/ProfilesService";
 
 const styles = {
   appBar: {
@@ -49,7 +50,7 @@ class App extends Component {
 
   componentDidMount() {
     this.setState({ loadingProfiles: true }, () => {
-      fetch("http://localhost:3000/api/profiles")
+      getProfiles()
         .then(response => response.json())
         .then(body => {
           this.setState({ loadingProfiles: false, profiles: body });

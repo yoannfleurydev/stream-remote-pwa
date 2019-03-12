@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import QrReader from "react-qr-reader";
 import Grid from "@material-ui/core/Grid";
 import { TextField, Button } from "@material-ui/core";
+import { setStreamRemoteServerAddress } from "../services/StreamRemoteService";
 
 class Scan extends Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class Scan extends Component {
   handleSubmit = () => {
     const { address } = this.state;
 
-    localStorage.setItem("stream.remote.pwa.address", address);
+    setStreamRemoteServerAddress(address);
 
     this.setState({ redirect: true });
   };
