@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import QrReader from "react-qr-reader";
 import Grid from "@material-ui/core/Grid";
 import { TextField, Button } from "@material-ui/core";
@@ -8,12 +9,21 @@ class Scan extends Component {
     super(props);
 
     this.state = {
-      address: ""
+      address: "",
+      redirect: false
     };
   }
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
+  };
+
+  handleSubmit = () => {
+    const { address } = this.state;
+
+    localStorage.setItem("stream.remote.pwa.address", address);
+
+    this.setState({ redirect: true });
   };
 
   handleScan = address => {
@@ -29,7 +39,11 @@ class Scan extends Component {
   };
 
   render() {
-    const { address } = this.state;
+    const { address, redirect } = this.state;
+
+    if (redirect) {
+      return <Redirect to="/" />;
+    }
 
     return (
       <Grid container spacing={24}>
@@ -37,29 +51,33 @@ class Scan extends Component {
           <QrReader onError={this.handleError} onScan={this.handleScan} />
         </Grid>
         <Grid item lg={8} md={6} sm={12} xs={12}>
-          <Grid container spacing={24}>
-            <Grid item xs={12}>
-              <TextField
-                id="outlined-name"
-                label="Address"
-                name="address"
-                value={address}
-                onChange={this.handleChange}
-                variant="outlined"
-                fullWidth
-              />
+          <form onSubmit={this.handleSubmit}>
+            <Grid container spacing={24}>
+              <Grid item xs={12}>
+                <TextField
+                  id="outlined-name"
+                  label="Address"
+                  name="address"
+                  value={address}
+                  onChange={this.handleChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={address.length === 0}
+                  fullWidth
+                  onClick={this.handleSubmit}
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={address.length === 0}
-                fullWidth
-              >
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
+          </form>
         </Grid>
       </Grid>
     );

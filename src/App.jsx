@@ -53,6 +53,9 @@ class App extends Component {
         .then(response => response.json())
         .then(body => {
           this.setState({ loadingProfiles: false, profiles: body });
+        })
+        .catch(err => {
+          console.error("Unable to fetch the data from the server");
         });
     });
   }
