@@ -1,3 +1,12 @@
 import { getBase } from "./StreamRemoteService";
 
-export const getProfiles = () => fetch(`${getBase()}/api/profiles`);
+const PROFILES_BASE = `${getBase()}/api/profiles`;
+
+export const getProfiles = () => fetch(PROFILES_BASE);
+
+export const postProfile = profile =>
+  fetch(PROFILES_BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profile)
+  });

@@ -14,6 +14,8 @@ import { ListItem, ListItemText, List } from "@material-ui/core";
 import Index from "./pages/Index";
 import Scan from "./pages/Scan";
 import { getProfiles } from "./services/ProfilesService";
+import { getStreamRemoteServerAddress } from "./services/StreamRemoteService";
+import AddProfileDialog from "./components/AddProfileDialog";
 
 const styles = theme => ({
   appBar: {
@@ -47,11 +49,18 @@ class App extends Component {
     this.state = {
       loadingProfiles: false,
       profiles: [],
-      isDrawerOpen: false
+      isDrawerOpen: false,
+      isDialogOpen: false
     };
   }
 
   componentDidMount() {
+    if (getStreamRemoteServerAddress()) {
+      this.getProfiles();
+    }
+  }
+
+  getProfiles = () => {
     this.setState({ loadingProfiles: true }, () => {
       getProfiles()
         .then(response => response.json())
@@ -60,9 +69,18 @@ class App extends Component {
         })
         .catch(err => {
           console.error("Unable to fetch the data from the server");
+          console.error(err);
         });
     });
-  }
+  };
+
+  toggleDialog = () => {
+    const { isDialogOpen } = this.state;
+
+    this.setState({
+      isDialogOpen: !isDialogOpen
+    });
+  };
 
   toggleDrawer = () => {
     const { isDrawerOpen } = this.state;
@@ -74,14 +92,17 @@ class App extends Component {
 
   render() {
     const { classes } = this.props;
-    const { profiles, isDrawerOpen } = this.state;
+    const { profiles, isDrawerOpen, isDialogOpen } = this.state;
 
     return (
       <Fragment>
         <Router>
           <div className={classes.body}>
             <Route path="/" component={Index} exact />
-            <Route path="/scan" component={Scan} />
+            <Route
+              path="/scan"
+              render={props => <Scan {...props} onUpdate={this.getProfiles} />}
+            />
           </div>
 
           <Drawer open={isDrawerOpen} onClose={this.toggleDrawer}>
@@ -115,6 +136,7 @@ class App extends Component {
                 color="secondary"
                 aria-label="Add"
                 className={classes.fabButton}
+                onClick={this.toggleDialog}
               >
                 <AddIcon />
               </Fab>
@@ -130,6 +152,11 @@ class App extends Component {
               </div>
             </Toolbar>
           </AppBar>
+
+          <AddProfileDialog
+            open={isDialogOpen}
+            handleClose={this.toggleDialog}
+          />
         </Router>
       </Fragment>
     );

@@ -21,8 +21,11 @@ class Scan extends Component {
 
   handleSubmit = () => {
     const { address } = this.state;
+    const { onUpdate } = this.props;
 
     setStreamRemoteServerAddress(address);
+
+    onUpdate();
 
     this.setState({ redirect: true });
   };
