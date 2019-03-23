@@ -16,7 +16,10 @@ class Index extends Component {
       .then(response => response.json())
       .then(body => new Health(body))
       .then(health => this.setState({ health }))
-      .catch(err => console.error(err));
+      .catch(err => {
+        this.setState({ health: new Health({ status: "down" }) });
+        console.error(err);
+      });
   }
 
   render() {

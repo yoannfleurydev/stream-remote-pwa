@@ -1,4 +1,4 @@
-const INIT = { status: "down" };
+const INIT = { status: "up" };
 
 export class Health {
   constructor({ status } = INIT) {

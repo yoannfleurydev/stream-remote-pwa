@@ -15,10 +15,13 @@ import Index from "./pages/Index";
 import Scan from "./pages/Scan";
 import { getProfiles } from "./services/ProfilesService";
 
-const styles = {
+const styles = theme => ({
   appBar: {
     top: "auto",
     bottom: 0
+  },
+  body: {
+    margin: theme.spacing.unit * 2
   },
   toolbar: {
     alignItems: "center",
@@ -35,7 +38,7 @@ const styles = {
   drawer: {
     width: 250
   }
-};
+});
 
 class App extends Component {
   constructor(props) {
@@ -76,7 +79,7 @@ class App extends Component {
     return (
       <Fragment>
         <Router>
-          <div style={{ margin: "24px" }}>
+          <div className={classes.body}>
             <Route path="/" component={Index} exact />
             <Route path="/scan" component={Scan} />
           </div>
