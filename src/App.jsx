@@ -10,12 +10,19 @@ import MenuIcon from "@material-ui/icons/Menu";
 import AddIcon from "@material-ui/icons/Add";
 import ComputerOutlinedIcon from "@material-ui/icons/ComputerOutlined";
 import Drawer from "@material-ui/core/Drawer";
-import { ListItem, ListItemText, List } from "@material-ui/core";
+import {
+  ListItem,
+  ListItemText,
+  List,
+  Divider,
+  ListItemIcon
+} from "@material-ui/core";
 import Index from "./pages/Index";
 import Scan from "./pages/Scan";
 import { getProfiles } from "./services/ProfilesService";
 import { getStreamRemoteServerAddress } from "./services/StreamRemoteService";
 import AddProfileDialog from "./components/AddProfileDialog";
+import ListIcon from "@material-ui/icons/ListOutlined";
 
 const styles = theme => ({
   appBar: {
@@ -114,6 +121,17 @@ class App extends Component {
               className={classes.drawer}
             >
               <List>
+                <Link to="/profiles">
+                  <ListItem button>
+                    <ListItemIcon>
+                      <ListIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Profiles" />
+                  </ListItem>
+                </Link>
+              </List>
+              <Divider />
+              <List>
                 {profiles.map(profile => (
                   <ListItem button key={profile._id}>
                     <ListItemText primary={profile.name} />
@@ -140,7 +158,7 @@ class App extends Component {
               >
                 <AddIcon />
               </Fab>
-              <div>
+              <React.Fragment>
                 <Link
                   style={{ textDecoration: "none", color: "white" }}
                   to="/scan"
@@ -149,7 +167,7 @@ class App extends Component {
                     <ComputerOutlinedIcon />
                   </IconButton>
                 </Link>
-              </div>
+              </React.Fragment>
             </Toolbar>
           </AppBar>
 
