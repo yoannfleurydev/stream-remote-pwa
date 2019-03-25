@@ -23,6 +23,7 @@ import { getProfiles } from "./services/ProfilesService";
 import { getStreamRemoteServerAddress } from "./services/StreamRemoteService";
 import AddProfileDialog from "./components/AddProfileDialog";
 import ListIcon from "@material-ui/icons/ListOutlined";
+import Profiles from "./pages/Profiles";
 
 const styles = theme => ({
   appBar: {
@@ -110,6 +111,7 @@ class App extends Component {
               path="/scan"
               render={props => <Scan {...props} onUpdate={this.getProfiles} />}
             />
+            <Route path="/profiles" component={Profiles} />
           </div>
 
           <Drawer open={isDrawerOpen} onClose={this.toggleDrawer}>
