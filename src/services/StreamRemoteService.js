@@ -3,7 +3,7 @@ export const STREAM_REMOTE_SERVER_ADDRESS = "stream.remote.address";
 export const getStreamRemoteServerAddress = () =>
   localStorage.getItem(STREAM_REMOTE_SERVER_ADDRESS);
 
-export const setStreamRemoteServerAddress = value =>
+export const setStreamRemoteServerAddress = async value =>
   localStorage.setItem(STREAM_REMOTE_SERVER_ADDRESS, value);
 
 export const getBase = () => `http://${getStreamRemoteServerAddress()}`;

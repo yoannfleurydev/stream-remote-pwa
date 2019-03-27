@@ -69,6 +69,7 @@ class App extends Component {
   }
 
   getProfiles = () => {
+    console.log("Hello");
     this.setState({ loadingProfiles: true }, () => {
       getProfiles()
         .then(response => response.json())
@@ -76,6 +77,7 @@ class App extends Component {
           this.setState({ loadingProfiles: false, profiles: body });
         })
         .catch(err => {
+          this.setState({ loadingProfiles: false, profiles: [] });
           console.error("Unable to fetch the data from the server");
           console.error(err);
         });
