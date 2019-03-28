@@ -19,11 +19,19 @@ function AddProfileDialog({ handleClose, open }) {
 
     postProfile(profile)
       .then(() => {
+        setName("");
+        setColor("");
         handleClose();
       })
       .catch(err => {
         console.error(err);
       });
+  };
+
+  const handleKeyPress = event => {
+    if (event.key === "Enter") {
+      handleSubmit();
+    }
   };
 
   return (
@@ -44,6 +52,7 @@ function AddProfileDialog({ handleClose, open }) {
           onChange={event => {
             setName(event.target.value);
           }}
+          onKeyPress={handleKeyPress}
           value={name}
           fullWidth
         />
@@ -56,6 +65,7 @@ function AddProfileDialog({ handleClose, open }) {
           onChange={event => {
             setColor(event.target.value);
           }}
+          onKeyPress={handleKeyPress}
           value={color}
           fullWidth
         />

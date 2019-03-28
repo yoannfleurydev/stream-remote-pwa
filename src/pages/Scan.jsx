@@ -56,7 +56,6 @@ function Scan({ onUpdate }) {
                 color="primary"
                 disabled={address.length === 0}
                 fullWidth
-                onClick={handleSubmit}
                 type="submit"
               >
                 Submit

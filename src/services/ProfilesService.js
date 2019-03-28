@@ -10,3 +10,6 @@ export const postProfile = profile =>
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(profile)
   });
+
+export const deleteProfile = profile =>
+  fetch(`${PROFILES_BASE}/${profile.id}`, { method: "DELETE" });
