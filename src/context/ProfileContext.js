@@ -2,7 +2,8 @@ import React from "react";
 import {
   getProfiles,
   deleteProfile,
-  postProfile
+  postProfile,
+  patchProfile
 } from "../services/ProfilesService";
 import { Profile } from "../resources/Profile";
 import { getStreamRemoteServerAddress } from "../services/StreamRemoteService";
@@ -11,8 +12,7 @@ export const ProfileContext = React.createContext();
 
 export class ProfileContextProvider extends React.Component {
   state = {
-    profiles: [],
-    profile: {}
+    profiles: []
   };
 
   componentDidMount() {
@@ -53,13 +53,27 @@ export class ProfileContextProvider extends React.Component {
     });
   };
 
+  updateProfile = profile => {
+    return patchProfile(profile)
+      .then(res => res.json())
+      .then(newProfile => {
+        const profiles = this.state.profiles.map(p => {
+          if (p.id !== profile.id) return p;
+          return newProfile;
+        });
+
+        this.setState({ profiles });
+      });
+  };
+
   render() {
     return (
       <ProfileContext.Provider
         value={{
           state: this.state,
           deleteProfile: this.deleteProfile,
-          addProfile: this.addProfile
+          addProfile: this.addProfile,
+          updateProfile: this.updateProfile
         }}
       >
         {this.props.children}

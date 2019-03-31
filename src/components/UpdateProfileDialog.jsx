@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -8,22 +8,29 @@ import {
   Button
 } from "@material-ui/core";
 import { Profile } from "../resources/Profile";
-import { patchProfile } from "../services/ProfilesService";
+import { ProfileContext } from "../context/ProfileContext";
 
-function UpdateProfileDialog({ handleClose, open, profile = new Profile() }) {
-  const [name, setName] = useState(profile.name);
-  const [color, setColor] = useState(profile.color);
+function UpdateProfileDialog({
+  handleClose,
+  open,
+  profileToUpdate = new Profile()
+}) {
+  const [id, setId] = useState("id");
+  const [name, setName] = useState("");
+  const [color, setColor] = useState("");
 
-  useEffect(() => {
-    setName(profile.name);
-    setColor(profile.color);
-  }, []);
+  console.log(id, profileToUpdate.id);
 
-  const handleSubmit = () => {
-    const profile = new Profile({ name, color });
+  if (id !== profileToUpdate.id) {
+    setId(profileToUpdate.id);
+    setName(profileToUpdate.name);
+    setColor(profileToUpdate.color);
+  }
 
-    patchProfile(profile)
+  const handleSubmit = updateProfile => {
+    updateProfile(new Profile({ _id: id, name, color }))
       .then(() => {
+        setId("id");
         setName("");
         setColor("");
         handleClose();
@@ -33,9 +40,9 @@ function UpdateProfileDialog({ handleClose, open, profile = new Profile() }) {
       });
   };
 
-  const handleKeyPress = event => {
+  const handleKeyPress = (event, updateProfile) => {
     if (event.key === "Enter") {
-      handleSubmit();
+      handleSubmit(updateProfile);
     }
   };
 
@@ -46,43 +53,52 @@ function UpdateProfileDialog({ handleClose, open, profile = new Profile() }) {
       aria-labelledby="form-dialog-title"
     >
       <DialogTitle id="form-dialog-title">Profile</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Name"
-          type="text"
-          name="name"
-          onChange={event => {
-            setName(event.target.value);
-          }}
-          onKeyPress={handleKeyPress}
-          value={name}
-          fullWidth
-        />
-        <TextField
-          margin="dense"
-          id="color"
-          label="Color"
-          type="text"
-          name="color"
-          onChange={event => {
-            setColor(event.target.value);
-          }}
-          onKeyPress={handleKeyPress}
-          value={color}
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} color="primary">
-          Update Profile
-        </Button>
-      </DialogActions>
+      <ProfileContext.Consumer>
+        {profileContext => (
+          <React.Fragment>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Name"
+                type="text"
+                name="name"
+                onKeyPress={event =>
+                  handleKeyPress(event, profileContext.updateProfile)
+                }
+                fullWidth
+                value={name}
+                onChange={event => setName(event.target.value)}
+              />
+              <TextField
+                margin="dense"
+                id="color"
+                label="Color"
+                type="text"
+                name="color"
+                onKeyPress={event =>
+                  handleKeyPress(event, profileContext.updateProfile)
+                }
+                fullWidth
+                value={color}
+                onChange={event => setColor(event.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleSubmit(profileContext.updateProfile)}
+                color="primary"
+              >
+                Update Profile
+              </Button>
+            </DialogActions>
+          </React.Fragment>
+        )}
+      </ProfileContext.Consumer>
     </Dialog>
   );
 }

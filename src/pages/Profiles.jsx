@@ -35,7 +35,17 @@ class Profiles extends React.Component {
           <ProfileContext.Consumer>
             {profileContext => {
               if (profileContext.state.profiles.length === 0) {
-                return <p>It's empty here</p>;
+                return (
+                  <Grid item xs={12}>
+                    <Card>
+                      <CardContent>
+                        <Typography component="h2" variant="h2" align="center">
+                          No profile available
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
               }
 
               return profileContext.state.profiles.map(profile => (
@@ -70,8 +80,8 @@ class Profiles extends React.Component {
         </Grid>
         <UpdateProfileDialog
           open={isDialogOpen}
-          handleClose={this.toggleDialog}
-          profile={selectedProfile}
+          handleClose={() => this.toggleDialog(new Profile())}
+          profileToUpdate={selectedProfile}
         />
       </React.Fragment>
     );
