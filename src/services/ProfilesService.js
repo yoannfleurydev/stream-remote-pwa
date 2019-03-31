@@ -13,3 +13,10 @@ export const postProfile = profile =>
 
 export const deleteProfile = profile =>
   fetch(`${PROFILES_BASE}/${profile.id}`, { method: "DELETE" });
+
+export const patchProfile = profile =>
+  fetch(`${PROFILES_BASE}/${profile.id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profile)
+  });

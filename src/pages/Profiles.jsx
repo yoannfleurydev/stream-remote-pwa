@@ -7,65 +7,73 @@ import {
   Button,
   Grid
 } from "@material-ui/core";
-import { getProfiles, deleteProfile } from "../services/ProfilesService";
 import { Profile } from "../resources/Profile";
+import UpdateProfileDialog from "../components/UpdateProfileDialog";
+import { ProfileContext } from "../context/ProfileContext";
 
 class Profiles extends React.Component {
   state = {
-    profiles: []
+    isDialogOpen: false,
+    selectedProfile: new Profile()
   };
 
-  componentDidMount() {
-    getProfiles()
-      .then(response => response.json())
-      .then(body => body.map(profile => new Profile(profile)))
-      .then(profiles => this.setState({ profiles }));
-  }
+  toggleDialog = profile => {
+    const { isDialogOpen } = this.state;
 
-  handleDeletion = profile => {
-    const { profiles } = this.state;
-
-    deleteProfile(profile).then(() => {
-      const newProfiles = profiles;
-      let index = newProfiles.indexOf(profile);
-
-      if (index > -1) {
-        newProfiles.splice(index, 1);
-      }
-
-      this.setState({ profiles: newProfiles });
+    this.setState({
+      isDialogOpen: !isDialogOpen,
+      selectedProfile: profile
     });
   };
 
   render() {
-    const { profiles } = this.state;
+    const { isDialogOpen, selectedProfile } = this.state;
 
     return (
-      <Grid container spacing={24}>
-        {profiles.map(profile => (
-          <Grid item xs={12} sm={6} lg={3} key={profile.id}>
-            <Card>
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="h2">
-                  {profile.name}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button size="small" color="primary">
-                  Update
-                </Button>
-                <Button
-                  size="small"
-                  color="secondary"
-                  onClick={() => this.handleDeletion(profile)}
-                >
-                  Delete
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <React.Fragment>
+        <Grid container spacing={24}>
+          <ProfileContext.Consumer>
+            {profileContext => {
+              if (profileContext.state.profiles.length === 0) {
+                return <p>It's empty here</p>;
+              }
+
+              return profileContext.state.profiles.map(profile => (
+                <Grid item xs={12} sm={6} lg={3} key={profile.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {profile.name}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.toggleDialog(profile)}
+                      >
+                        Update
+                      </Button>
+                      <Button
+                        size="small"
+                        color="secondary"
+                        onClick={() => profileContext.deleteProfile(profile)}
+                      >
+                        Delete
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ));
+            }}
+          </ProfileContext.Consumer>
+        </Grid>
+        <UpdateProfileDialog
+          open={isDialogOpen}
+          handleClose={this.toggleDialog}
+          profile={selectedProfile}
+        />
+      </React.Fragment>
     );
   }
 }

@@ -19,11 +19,13 @@ import {
 } from "@material-ui/core";
 import Index from "./pages/Index";
 import Scan from "./pages/Scan";
-import { getProfiles } from "./services/ProfilesService";
-import { getStreamRemoteServerAddress } from "./services/StreamRemoteService";
 import AddProfileDialog from "./components/AddProfileDialog";
 import ListIcon from "@material-ui/icons/ListOutlined";
 import Profiles from "./pages/Profiles";
+import {
+  ProfileContextProvider,
+  ProfileContext
+} from "./context/ProfileContext";
 
 const styles = theme => ({
   appBar: {
@@ -62,28 +64,6 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
-    if (getStreamRemoteServerAddress()) {
-      this.getProfiles();
-    }
-  }
-
-  getProfiles = () => {
-    console.log("Hello");
-    this.setState({ loadingProfiles: true }, () => {
-      getProfiles()
-        .then(response => response.json())
-        .then(body => {
-          this.setState({ loadingProfiles: false, profiles: body });
-        })
-        .catch(err => {
-          this.setState({ loadingProfiles: false, profiles: [] });
-          console.error("Unable to fetch the data from the server");
-          console.error(err);
-        });
-    });
-  };
-
   toggleDialog = () => {
     const { isDialogOpen } = this.state;
 
@@ -102,84 +82,92 @@ class App extends Component {
 
   render() {
     const { classes } = this.props;
-    const { profiles, isDrawerOpen, isDialogOpen } = this.state;
+    const { isDrawerOpen, isDialogOpen } = this.state;
 
     return (
       <Fragment>
-        <Router>
-          <div className={classes.body}>
-            <Route path="/" component={Index} exact />
-            <Route
-              path="/scan"
-              render={props => <Scan {...props} onUpdate={this.getProfiles} />}
-            />
-            <Route path="/profiles" component={Profiles} />
-          </div>
-
-          <Drawer open={isDrawerOpen} onClose={this.toggleDrawer}>
-            <div
-              tabIndex={0}
-              role="button"
-              onClick={this.toggleDrawer}
-              onKeyDown={this.toggleDrawer}
-              className={classes.drawer}
-            >
-              <List>
-                <Link to="/profiles">
-                  <ListItem button>
-                    <ListItemIcon>
-                      <ListIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Profiles" />
-                  </ListItem>
-                </Link>
-              </List>
-              <Divider />
-              <List>
-                {profiles.map(profile => (
-                  <ListItem button key={profile._id}>
-                    <ListItemText primary={profile.name} />
-                  </ListItem>
-                ))}
-              </List>
+        <ProfileContextProvider>
+          <Router>
+            <div className={classes.body}>
+              <Route path="/" component={Index} exact />
+              <Route
+                path="/scan"
+                render={props => (
+                  <Scan {...props} onUpdate={this.getProfiles} />
+                )}
+              />
+              <Route path="/profiles" component={Profiles} />
             </div>
-          </Drawer>
 
-          <AppBar position="fixed" color="primary" className={classes.appBar}>
-            <Toolbar className={classes.toolbar}>
-              <IconButton
-                color="inherit"
-                aria-label="Open drawer"
+            <Drawer open={isDrawerOpen} onClose={this.toggleDrawer}>
+              <div
+                tabIndex={0}
+                role="button"
                 onClick={this.toggleDrawer}
+                onKeyDown={this.toggleDrawer}
+                className={classes.drawer}
               >
-                <MenuIcon />
-              </IconButton>
-              <Fab
-                color="secondary"
-                aria-label="Add"
-                className={classes.fabButton}
-                onClick={this.toggleDialog}
-              >
-                <AddIcon />
-              </Fab>
-              <React.Fragment>
-                <Link
-                  style={{ textDecoration: "none", color: "white" }}
-                  to="/scan"
-                >
-                  <IconButton color="inherit">
-                    <ComputerOutlinedIcon />
-                  </IconButton>
-                </Link>
-              </React.Fragment>
-            </Toolbar>
-          </AppBar>
+                <List>
+                  <Link to="/profiles">
+                    <ListItem button>
+                      <ListItemIcon>
+                        <ListIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Profiles" />
+                    </ListItem>
+                  </Link>
+                </List>
+                <Divider />
+                <List>
+                  <ProfileContext.Consumer>
+                    {profileContext =>
+                      profileContext.state.profiles.map(profile => (
+                        <ListItem button key={profile.id}>
+                          <ListItemText primary={profile.name} />
+                        </ListItem>
+                      ))
+                    }
+                  </ProfileContext.Consumer>
+                </List>
+              </div>
+            </Drawer>
 
-          <AddProfileDialog
-            open={isDialogOpen}
-            handleClose={this.toggleDialog}
-          />
-        </Router>
+            <AppBar position="fixed" color="primary" className={classes.appBar}>
+              <Toolbar className={classes.toolbar}>
+                <IconButton
+                  color="inherit"
+                  aria-label="Open drawer"
+                  onClick={this.toggleDrawer}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Fab
+                  color="secondary"
+                  aria-label="Add"
+                  className={classes.fabButton}
+                  onClick={this.toggleDialog}
+                >
+                  <AddIcon />
+                </Fab>
+                <React.Fragment>
+                  <Link
+                    style={{ textDecoration: "none", color: "white" }}
+                    to="/scan"
+                  >
+                    <IconButton color="inherit">
+                      <ComputerOutlinedIcon />
+                    </IconButton>
+                  </Link>
+                </React.Fragment>
+              </Toolbar>
+            </AppBar>
+
+            <AddProfileDialog
+              open={isDialogOpen}
+              handleClose={this.toggleDialog}
+            />
+          </Router>
+        </ProfileContextProvider>
       </Fragment>
     );
   }
