@@ -8,7 +8,7 @@ import {
   Grid
 } from "@material-ui/core";
 import { Profile } from "../resources/Profile";
-import UpdateProfileDialog from "../components/UpdateProfileDialog";
+import ProfileDialog from "../components/ProfileDialog";
 import { ProfileContext } from "../context/ProfileContext";
 
 class Profiles extends React.Component {
@@ -78,7 +78,7 @@ class Profiles extends React.Component {
             }}
           </ProfileContext.Consumer>
         </Grid>
-        <UpdateProfileDialog
+        <ProfileDialog
           open={isDialogOpen}
           handleClose={() => this.toggleDialog(new Profile())}
           profileToUpdate={selectedProfile}

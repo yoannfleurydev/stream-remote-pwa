@@ -3,44 +3,66 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  TextField,
   DialogActions,
   Button
 } from "@material-ui/core";
 import { Profile } from "../resources/Profile";
 import { ProfileContext } from "../context/ProfileContext";
+import TextFieldOutlined from "./molecules/TextFieldOutlined";
 
-function UpdateProfileDialog({
-  handleClose,
-  open,
-  profileToUpdate = new Profile()
-}) {
+function UpdateProfileDialog({ handleClose, open, profileToUpdate }) {
   const [id, setId] = useState("id");
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  if (id !== profileToUpdate.id) {
+  const isUpdate = Boolean(profileToUpdate);
+
+  if (profileToUpdate && id !== profileToUpdate.id) {
     setId(profileToUpdate.id);
     setName(profileToUpdate.name);
     setColor(profileToUpdate.color);
   }
 
-  const handleSubmit = updateProfile => {
-    updateProfile(new Profile({ _id: id, name, color }))
+  const resetTextFields = () => {
+    setId("id");
+    setName("");
+    setColor("");
+  };
+
+  const handleSubmit = profileContext => {
+    setLoading(true);
+
+    if (isUpdate) {
+      profileContext
+        .updateProfile(new Profile({ _id: id, name, color }))
+        .then(() => {
+          resetTextFields();
+          handleClose();
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+
+      return;
+    }
+
+    profileContext
+      .addProfile(new Profile({ name, color }))
       .then(() => {
-        setId("id");
-        setName("");
-        setColor("");
+        resetTextFields();
         handleClose();
+        setLoading(false);
       })
       .catch(err => {
         console.error(err);
       });
   };
 
-  const handleKeyPress = (event, updateProfile) => {
+  const handleKeyPress = (event, profileContext) => {
     if (event.key === "Enter") {
-      handleSubmit(updateProfile);
+      handleSubmit(profileContext);
     }
   };
 
@@ -55,43 +77,40 @@ function UpdateProfileDialog({
         {profileContext => (
           <React.Fragment>
             <DialogContent>
-              <TextField
+              <TextFieldOutlined
                 autoFocus
                 margin="dense"
                 id="name"
                 label="Name"
                 type="text"
                 name="name"
-                onKeyPress={event =>
-                  handleKeyPress(event, profileContext.updateProfile)
-                }
+                onKeyPress={event => handleKeyPress(event, profileContext)}
                 fullWidth
                 value={name}
                 onChange={event => setName(event.target.value)}
               />
-              <TextField
+              <TextFieldOutlined
                 margin="dense"
                 id="color"
                 label="Color"
                 type="text"
                 name="color"
-                onKeyPress={event =>
-                  handleKeyPress(event, profileContext.updateProfile)
-                }
+                onKeyPress={event => handleKeyPress(event, profileContext)}
                 fullWidth
                 value={color}
                 onChange={event => setColor(event.target.value)}
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} color="primary">
+              <Button onClick={handleClose} color="primary" disabled={loading}>
                 Cancel
               </Button>
               <Button
-                onClick={() => handleSubmit(profileContext.updateProfile)}
+                onClick={() => handleSubmit(profileContext)}
                 color="primary"
+                disabled={loading}
               >
-                Update Profile
+                {isUpdate ? "Update Profile" : "Add Profile"}
               </Button>
             </DialogActions>
           </React.Fragment>

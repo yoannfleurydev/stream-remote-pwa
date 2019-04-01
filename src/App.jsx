@@ -11,7 +11,7 @@ import AddIcon from "@material-ui/icons/Add";
 import ComputerOutlinedIcon from "@material-ui/icons/ComputerOutlined";
 import Index from "./pages/Index";
 import Scan from "./pages/Scan";
-import AddProfileDialog from "./components/AddProfileDialog";
+import ProfileDialog from "./components/ProfileDialog";
 import Profiles from "./pages/Profiles";
 import { ProfileContextProvider } from "./context/ProfileContext";
 import AppDrawer from "./components/AppDrawer";
@@ -123,7 +123,7 @@ class App extends Component {
               </Toolbar>
             </AppBar>
 
-            <AddProfileDialog
+            <ProfileDialog
               open={isDialogOpen}
               handleClose={this.toggleDialog}
             />
