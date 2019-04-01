@@ -9,23 +9,12 @@ import Fab from "@material-ui/core/Fab";
 import MenuIcon from "@material-ui/icons/Menu";
 import AddIcon from "@material-ui/icons/Add";
 import ComputerOutlinedIcon from "@material-ui/icons/ComputerOutlined";
-import Drawer from "@material-ui/core/Drawer";
-import {
-  ListItem,
-  ListItemText,
-  List,
-  Divider,
-  ListItemIcon
-} from "@material-ui/core";
 import Index from "./pages/Index";
 import Scan from "./pages/Scan";
 import AddProfileDialog from "./components/AddProfileDialog";
-import ListIcon from "@material-ui/icons/ListOutlined";
 import Profiles from "./pages/Profiles";
-import {
-  ProfileContextProvider,
-  ProfileContext
-} from "./context/ProfileContext";
+import { ProfileContextProvider } from "./context/ProfileContext";
+import AppDrawer from "./components/AppDrawer";
 
 const styles = theme => ({
   appBar: {
@@ -99,38 +88,10 @@ class App extends Component {
               <Route path="/profiles" component={Profiles} />
             </div>
 
-            <Drawer open={isDrawerOpen} onClose={this.toggleDrawer}>
-              <div
-                tabIndex={0}
-                role="button"
-                onClick={this.toggleDrawer}
-                onKeyDown={this.toggleDrawer}
-                className={classes.drawer}
-              >
-                <List>
-                  <Link to="/profiles">
-                    <ListItem button>
-                      <ListItemIcon>
-                        <ListIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Profiles" />
-                    </ListItem>
-                  </Link>
-                </List>
-                <Divider />
-                <List>
-                  <ProfileContext.Consumer>
-                    {profileContext =>
-                      profileContext.state.profiles.map(profile => (
-                        <ListItem button key={profile.id}>
-                          <ListItemText primary={profile.name} />
-                        </ListItem>
-                      ))
-                    }
-                  </ProfileContext.Consumer>
-                </List>
-              </div>
-            </Drawer>
+            <AppDrawer
+              isDrawerOpen={isDrawerOpen}
+              toggleDrawer={this.toggleDrawer}
+            />
 
             <AppBar position="fixed" color="primary" className={classes.appBar}>
               <Toolbar className={classes.toolbar}>

@@ -19,8 +19,6 @@ function UpdateProfileDialog({
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
 
-  console.log(id, profileToUpdate.id);
-
   if (id !== profileToUpdate.id) {
     setId(profileToUpdate.id);
     setName(profileToUpdate.name);
