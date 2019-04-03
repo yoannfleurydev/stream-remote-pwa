@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -16,6 +16,8 @@ function UpdateProfileDialog({ handleClose, open, profileToUpdate }) {
   const [color, setColor] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const profileContext = useContext(ProfileContext);
+
   const isUpdate = Boolean(profileToUpdate);
 
   if (profileToUpdate && id !== profileToUpdate.id) {
@@ -30,7 +32,7 @@ function UpdateProfileDialog({ handleClose, open, profileToUpdate }) {
     setColor("");
   };
 
-  const handleSubmit = profileContext => {
+  const handleSubmit = () => {
     setLoading(true);
 
     if (isUpdate) {
@@ -60,9 +62,9 @@ function UpdateProfileDialog({ handleClose, open, profileToUpdate }) {
       });
   };
 
-  const handleKeyPress = (event, profileContext) => {
+  const handleKeyPress = event => {
     if (event.key === "Enter") {
-      handleSubmit(profileContext);
+      handleSubmit();
     }
   };
 
@@ -73,49 +75,41 @@ function UpdateProfileDialog({ handleClose, open, profileToUpdate }) {
       aria-labelledby="form-dialog-title"
     >
       <DialogTitle id="form-dialog-title">Profile</DialogTitle>
-      <ProfileContext.Consumer>
-        {profileContext => (
-          <React.Fragment>
-            <DialogContent>
-              <TextFieldOutlined
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Name"
-                type="text"
-                name="name"
-                onKeyPress={event => handleKeyPress(event, profileContext)}
-                fullWidth
-                value={name}
-                onChange={event => setName(event.target.value)}
-              />
-              <TextFieldOutlined
-                margin="dense"
-                id="color"
-                label="Color"
-                type="text"
-                name="color"
-                onKeyPress={event => handleKeyPress(event, profileContext)}
-                fullWidth
-                value={color}
-                onChange={event => setColor(event.target.value)}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary" disabled={loading}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => handleSubmit(profileContext)}
-                color="primary"
-                disabled={loading}
-              >
-                {isUpdate ? "Update Profile" : "Add Profile"}
-              </Button>
-            </DialogActions>
-          </React.Fragment>
-        )}
-      </ProfileContext.Consumer>
+      <React.Fragment>
+        <DialogContent>
+          <TextFieldOutlined
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            type="text"
+            name="name"
+            onKeyPress={handleKeyPress}
+            fullWidth
+            value={name}
+            onChange={event => setName(event.target.value)}
+          />
+          <TextFieldOutlined
+            margin="dense"
+            id="color"
+            label="Color"
+            type="text"
+            name="color"
+            onKeyPress={handleKeyPress}
+            fullWidth
+            value={color}
+            onChange={event => setColor(event.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary" disabled={loading}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary" disabled={loading}>
+            {isUpdate ? "Update Profile" : "Add Profile"}
+          </Button>
+        </DialogActions>
+      </React.Fragment>
     </Dialog>
   );
 }
